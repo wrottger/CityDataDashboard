@@ -10,57 +10,27 @@ from collections import deque
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-sound_gauge = daq.Gauge(
-    color={"gradient": True, "ranges": {"green": [0, 60], "yellow": [60, 80], "red": [80, 100]}},
-    value=50,
-    label='Lärmpegel',
-    max=100,
-    min=0,
-    id='sound-gauge'
-)
-
-sound_graph = dcc.Graph(
-    figure={
-        'layout': {
-            'title': 'Tages Lärmpegel'
-        }
-    },
-    config={
-        'displayModeBar': False
-    },
-    id='sound-graph',
-    responsive=True,
-)
-
-traffic_volume = dcc.Graph(
-    figure={
-        'layout': {
-            'title': 'Verkehrsaufkommen'
-        }
-    },
-    config={
-        'displayModeBar': False
-    },
-    id='traffic-volume-graph',
-    responsive=True,
-)
-
 app.layout = html.Div([
     html.H3('City Data Dashboard'),
     html.Div([
         html.Div([
-            sound_gauge
+            dcc.Graph(id="sound-gauge")
         ], className="four columns"),
         html.Div([
-            sound_graph
+            dcc.Graph(id="sound-graph")
         ], className="four columns"),
         html.Div([
-            traffic_volume
+            dcc.Graph(id="traffic-graph")
         ], className="four columns"),
     ], className="row"),
     dcc.Interval(
-        id='interval-component',
-        interval=600,  # in milliseconds
+        id='fast-interval',
+        interval=300,
+        n_intervals=0
+    ),
+    dcc.Interval(
+        id='graph-interval',
+        interval=1000,
         n_intervals=0
     ),
 ])
@@ -68,14 +38,31 @@ app.layout = html.Div([
 
 @app.callback(
     Output("sound-gauge", "figure"),
-    Input("interval-component", "n_intervals"))
+    Input("fast-interval", "n_intervals"))
 def display_area(y):
-    fig = daq.Gauge()
+    fig = go.Figure(go.Indicator(
+        domain={'x': [0, 1], 'y': [0, 1]},
+        value=450,
+        mode="gauge+number+delta",
+        title={'text': "Speed"},
+        delta={'reference': 380},
+        gauge={'axis': {'range': [None, 500]},
+               'steps': [
+                   {'range': [0, 250], 'color': "lightgray"},
+                   {'range': [250, 400], 'color': "gray"}],
+               'threshold': {'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 490}}))
 
 
 @app.callback(
     Output("sound-graph", "figure"),
-    Input("interval-component", "n_intervals"))
+    Input("graph-interval", "n_intervals"))
+def display_area(y):
+    pass
+
+
+@app.callback(
+    Output("traffic-graph", "figure"),
+    Input("graph-interval", "n_intervals"))
 def display_area(y):
     pass
 
