@@ -1,7 +1,6 @@
+import random
 import dash
-import pandas as pd
 import json
-import dash_daq as daq
 from dash import dcc, html, Input, Output, callback
 import plotly.express as px
 import plotly.graph_objects as go
@@ -25,46 +24,60 @@ app.layout = html.Div([
     ], className="row"),
     dcc.Interval(
         id='fast-interval',
-        interval=300,
+        interval=100,
         n_intervals=0
     ),
     dcc.Interval(
         id='graph-interval',
-        interval=1000,
+        interval=3000,
         n_intervals=0
     ),
 ])
+
+historic_sound = deque(maxlen=200)
+historic_traffic = deque(maxlen=200)
+decibel = 50
 
 
 @app.callback(
     Output("sound-gauge", "figure"),
     Input("fast-interval", "n_intervals"))
 def display_area(y):
+    global decibel
+    decibel += random.randint(-5, 5)
     fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=decibel,
         domain={'x': [0, 1], 'y': [0, 1]},
-        value=450,
-        mode="gauge+number+delta",
-        title={'text': "Speed"},
-        delta={'reference': 380},
-        gauge={'axis': {'range': [None, 500]},
+        title={'text': "Lärmpegel"},
+        gauge={'axis': {'range': [None, 100]},
+               'bar': {'color': "darkblue"},
                'steps': [
-                   {'range': [0, 250], 'color': "lightgray"},
-                   {'range': [250, 400], 'color': "gray"}],
-               'threshold': {'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 490}}))
+                   {'range': [0, 65], 'color': "green"},
+                   {'range': [65, 80], 'color': "orange"},
+                   {'range': [80, 100], 'color': "red"}]}
+    ))
+    return fig
 
 
 @app.callback(
     Output("sound-graph", "figure"),
     Input("graph-interval", "n_intervals"))
 def display_area(y):
-    pass
+    historic_sound.append(random.randint(1, 100))
+    fig = px.area(list(historic_sound), labels=None, title='<br>          Historischer Lärmpegel')
+    fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None)
+    return fig
 
 
 @app.callback(
     Output("traffic-graph", "figure"),
     Input("graph-interval", "n_intervals"))
 def display_area(y):
-    pass
+    historic_traffic.append(random.randint(1, 100))
+    fig = px.area(list(historic_traffic), labels=None, title='<br>          Verkehrsaufkommen')
+    fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None)
+    return fig
 
 
 if __name__ == '__main__':
