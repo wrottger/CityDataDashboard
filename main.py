@@ -36,15 +36,14 @@ app.layout = html.Div([
 
 historic_sound = deque(maxlen=200)
 historic_traffic = deque(maxlen=200)
-decibel = 50
 
 
 @app.callback(
     Output("sound-gauge", "figure"),
     Input("fast-interval", "n_intervals"))
 def display_area(y):
-    global decibel
-    decibel += random.randint(-5, 5)
+    with open("data/loudness", 'r') as f:
+        decibel = int(f.readline())
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=decibel,
@@ -64,7 +63,9 @@ def display_area(y):
     Output("sound-graph", "figure"),
     Input("graph-interval", "n_intervals"))
 def display_area(y):
-    historic_sound.append(random.randint(1, 100))
+    with open("data/loudness", 'r') as f:
+        decibel = int(f.readline())
+    historic_sound.append(decibel)
     fig = px.area(list(historic_sound), labels=None, title='<br>          Historischer Lärmpegel')
     fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None)
     return fig
@@ -74,7 +75,9 @@ def display_area(y):
     Output("traffic-graph", "figure"),
     Input("graph-interval", "n_intervals"))
 def display_area(y):
-    historic_traffic.append(random.randint(1, 100))
+    with open("data/traffic_volume", 'r') as f:
+        traffic = int(f.readline())
+    historic_traffic.append(traffic)
     fig = px.area(list(historic_traffic), labels=None, title='<br>          Verkehrsaufkommen')
     fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None)
     return fig
