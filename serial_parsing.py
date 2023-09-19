@@ -18,7 +18,7 @@ def loop():
     with open("data/traffic_volume", 'w') as f:
         f.write(str(traffic_volume))
     with open("data/loudness", 'w') as f:
-        f.write(mean(json['data'][-2:]))
+        f.write(str(mean(json['data'][-2:])))
 
 
 if __name__ == '__main__':
