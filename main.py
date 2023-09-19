@@ -1,6 +1,5 @@
-import random
+import pandas  # DO NOT REMOVE IMPORT
 import dash
-import json
 from dash import dcc, html, Input, Output, callback
 import plotly.express as px
 import plotly.graph_objects as go
@@ -43,7 +42,7 @@ historic_traffic = deque(maxlen=200)
     Input("fast-interval", "n_intervals"))
 def display_area(y):
     with open("data/loudness", 'r') as f:
-        decibel = int(f.readline())
+        decibel = int(float(f.readline()))
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=decibel,
@@ -64,7 +63,7 @@ def display_area(y):
     Input("graph-interval", "n_intervals"))
 def display_area(y):
     with open("data/loudness", 'r') as f:
-        decibel = int(f.readline())
+        decibel = int(float(f.readline()))
     historic_sound.append(decibel)
     fig = px.area(list(historic_sound), labels=None, title='<br>          Historischer Lärmpegel')
     fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None)
@@ -76,7 +75,7 @@ def display_area(y):
     Input("graph-interval", "n_intervals"))
 def display_area(y):
     with open("data/traffic_volume", 'r') as f:
-        traffic = int(f.readline())
+        traffic = int(float(f.readline()))
     historic_traffic.append(traffic)
     fig = px.area(list(historic_traffic), labels=None, title='<br>          Verkehrsaufkommen')
     fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None)
