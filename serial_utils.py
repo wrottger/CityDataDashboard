@@ -18,7 +18,7 @@ def get_json_data():
     for attempt in range(3):
         line = get_line()
         try:
-            json.loads(line)
+            line = json.loads(line)
             return line
         except json.decoder.JSONDecodeError:
             continue
