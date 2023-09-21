@@ -7,11 +7,15 @@ with open("data/calibrated_traffic", "r") as file:
     string_values = file.readline().split(sep=", ")
 normal_mean = list(map(float, string_values))
 
+with open("data/traffic_counter", 'w') as f:
+    f.write("0")
+
 
 def add_traffic():
     with open("data/traffic_counter", 'r') as f:
         number = int(float(f.readline()))
     number += 1
+    print(number)
     with open("data/traffic_counter", 'w') as f:
         f.write(str(number))
 
@@ -26,6 +30,7 @@ def car_passed(traffic_volume):
     if (last_traffic == 0 and
             traffic_volume != 0 and
             time.time() - last_time > 7):
+        last_time = time.time()
         return True
     else:
         return False
@@ -34,11 +39,18 @@ def car_passed(traffic_volume):
 def loop():
     global normal_mean
     traffic_volume = 0
+    sensors = list()
 
     json = get_json_data()
     for i in range(8):
+        if i == 6:
+            continue
         if (json['data'][i] - normal_mean[i]) > 2:
             traffic_volume += 1
+            sensors.append(1)
+        else:
+            sensors.append(0)
+    print(sensors)
     with open("data/traffic_volume", 'w') as f:
         f.write(str(traffic_volume))
     with open("data/loudness", 'w') as f:
