@@ -1,3 +1,4 @@
+import collections
 from collections import deque
 from statistics import mean
 import time
@@ -21,14 +22,14 @@ def add_traffic():
 
 
 last_time = time.time()
-last_traffic = 0
+last_traffic = collections.deque(maxlen=3)
 
 
 def car_passed(traffic_volume):
     global last_traffic, last_time
 
-    if (last_traffic == 0 and
-            traffic_volume != 0 and
+    last_traffic.append(traffic_volume)
+    if (last_traffic.count(0) == 0 and
             time.time() - last_time > 7):
         last_time = time.time()
         return True
