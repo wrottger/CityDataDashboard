@@ -10,20 +10,29 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets, title="City
 
 app.layout = html.Div([
     html.H3('City Data Dashboard'),
+
     html.Div([
         html.Div([
             dcc.Graph(id="sound-gauge")
-        ], className="four columns"),
+        ], className="six columns"),
         html.Div([
             dcc.Graph(id="sound-graph")
-        ], className="four columns"),
+        ], className="six columns"),
+    ], className="row"),
+
+    html.Div([
+        html.Div([
+            html.H5('Verkehrszähler'),
+            html.P("0", id="traffic-count")
+        ], className="six columns"),
         html.Div([
             dcc.Graph(id="traffic-graph")
-        ], className="four columns"),
+        ], className="six columns"),
     ], className="row"),
+
     dcc.Interval(
         id='fast-interval',
-        interval=100,
+        interval=400,
         n_intervals=0
     ),
     dcc.Interval(
@@ -82,6 +91,15 @@ def display_area(y):
         gridcolor="rgb(240,240,240)")
     fig.update_traces(line_color='rgb(25, 55, 89)')
     return fig
+
+
+@app.callback(
+    Output("traffic-count", "children"),
+    Input("graph-interval", "n_intervals"))
+def display_area(y):
+    with open("data/traffic_counter", 'r') as f:
+        traffic = int(float(f.readline()))
+    return traffic
 
 
 @app.callback(
