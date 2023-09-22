@@ -76,6 +76,7 @@ def display_area(y):
 def display_area(y):
     with open("data/loudness", 'r') as f:
         decibel = int(float(f.readline())) / 100
+    print(decibel)
     historic_sound.append(decibel)
     fig = px.line(list(historic_sound), labels=None, title='<br>          Historischer Lärmpegel')
     fig.update_layout(
@@ -106,7 +107,7 @@ def display_area(y):
     Output("traffic-graph", "figure"),
     Input("graph-interval", "n_intervals"))
 def display_area(y):
-    with open("data/traffic_volume", 'r') as f:
+    with open("data/traffic_counter", 'r') as f:
         traffic = int(float(f.readline()))
     historic_traffic.append(traffic)
     fig = px.line(list(historic_traffic), labels=None, title='<br>          Verkehrsaufkommen')
@@ -119,7 +120,6 @@ def display_area(y):
     )
     fig.update_yaxes(
         showgrid=True,
-        range=[0, 6],
         gridcolor="rgb(240,240,240)"
     )
     fig.update_xaxes(showgrid=False)
